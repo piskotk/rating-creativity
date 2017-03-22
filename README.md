@@ -1,9 +1,9 @@
-# rating-creativity
+# Rating creativity
 Web application for comparing buildings made of blocks
 
 This is a rating application that enables you two compare two pictures on the Likert scale. I have used plugins from jspsych.
 
-jsPsych was created by [Josh de Leeuw] (https://twitter.com/joshdeleeuw) at Indiana University.
+jsPsych was created by [Josh de Leeuw](https://twitter.com/joshdeleeuw) at Indiana University.
 
 ## Citation
 
