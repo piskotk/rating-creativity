@@ -4,8 +4,10 @@
         <title>My experiment</title>
         <link rel="shortcut icon" href="">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="js/jquery.js"></script>
         <script src="jspsych-5.0.3/jspsych.js"></script>
         <script src="jspsych-5.0.3/plugins/jspsych-text.js"></script>
+        <script src="jspsych-5.0.3/plugins/jspsych-call-function.js"></script>
         <script src="jspsych-5.0.3/plugins/jspsych-survey-likert.js"></script>
         <link href="jspsych-5.0.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
     </head>
@@ -31,9 +33,106 @@
     };
 
 /* define test block */
-    var image_pool = ["img/1.JPG", "img/2.JPG", "img/3.JPG", "img/4.JPG", "img/5.JPG", "img/6.JPG","img/7.JPG"];
+    var image_pool = ["1.JPG", "2.JPG", "3.JPG", "4.JPG", "5.JPG", "6.JPG", "7.JPG"];
 
     var scale = ["Very Similar - 1", "2", "3", "4", "5", "6", "7 - Very different"];
+
+    function pairsGenerator(inputSet, k) {
+      return (function subsetRecurser(subset, inputSetIndex, subsetIndex, result) {
+        inputSetIndex = inputSetIndex || 0
+        subsetIndex = subsetIndex || 0
+        subset = subset || []
+        result = result || []
+
+        if (subsetIndex === k) {
+          result.push(subset.slice())
+          return
+        }
+
+        if (inputSetIndex >= inputSet.length) {
+          return
+        }
+
+        subset[subsetIndex] = inputSet[inputSetIndex]
+        subsetRecurser(subset, inputSetIndex + 1, subsetIndex + 1, result)
+        subsetRecurser(subset, inputSetIndex + 1, subsetIndex, result)
+
+        return result
+      })()
+    };
+
+    const generatedPairs = pairsGenerator(image_pool, 2);
+    var generatedPairs1 = pairsGenerator(image_pool, 2);
+    console.log(generatedPairs);
+    console.log(generatedPairs1);
+
+    function randomNumberGenerator(min, max) {
+        return Math.floor(Math.random() * (max))
+      }
+    function uniqueRangeGenerator(min, max) {
+        const range = []
+
+        while (range.length < (max)) {
+          var randomNumber = randomNumberGenerator(min, max)
+
+          if (range.indexOf(randomNumber) === -1) {
+            range.push(randomNumber)
+          }
+        }
+        return range
+      };
+
+      const uniqueRange = uniqueRangeGenerator(0, generatedPairs.length);
+      var uniqueRange1 = uniqueRangeGenerator(0, generatedPairs.length);
+      console.log(uniqueRange);
+
+
+
+  /*function randomNumberGenerator(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min
+    }
+    function uniqueRangeGenerator(min, max) {
+      const range = []
+
+      while (range.length < (max - min + 1)) {
+        var randomNumber = randomNumberGenerator(min, max)
+
+        if (range.indexOf(randomNumber) === -1) {
+          range.push(randomNumber)
+        }
+      }
+      return range
+    };
+
+    const uniqueRange = uniqueRangeGenerator(0, generatedPairs.length);
+    var uniqueRange1 = uniqueRangeGenerator(0, generatedPairs.length);
+    console.log(uniqueRange);*/
+
+
+  /* function randomNorepeats(array) {
+      var copy = array.slice(0);
+      return function() {
+        if (copy.length < 1) { copy = array.slice(0); }
+        var index = Math.floor(Math.random() * copy.length);
+        var item = copy[index];
+        copy.splice(index, 1);
+        return item;
+      };
+    }; */
+
+  /*  function randomNorepeats(array) {
+       var copy = array.slice(0);
+       return function() {
+         if (copy.length < 1) { copy = array.slice(0); }
+         var index = Math.floor(Math.random() * copy.length);
+         var item = copy[index];
+         copy.splice(index, 1);
+         return item;
+       };
+     };
+
+    var rdnNumb = randomNorepeats(uniqueRange1);
+    var rdnNumb1 = rdnNumb(); */
 
 
 
@@ -42,19 +141,82 @@
     experiment.push(welcome_block);
     experiment.push(instructions_block);
 
-      for (var i = 1; i < 5; i++) {
+      for (var i = 1; i < 10; i++) {
 
-        var random_image1 = jsPsych.randomization.sample(image_pool, 1, false);
+      /*  var pair = generatedPairs[];
 
-        var random_image2 = jsPsych.randomization.sample(image_pool, 1, false);
+        for (var j = 0; j < generatedPairs.length; j++) {
+          if (pair[j] === )
+        }
+        var pair = [];
+
+        var pickAPair = function () {
+          var pair = generatedPairs[Math.floor(math.random() * generatedPairs.length)];
+          return pair;
+        };*/
+
+/* for loop that x is not repeated while the participant does the study
+
+
+    unique_random_numbers = []
+      while (unique_random_numbers.length < generatedPairs.length) {
+        var random_number = Math.floor((Math.random() * generatedPairs.length));
+          if (unique_random_numbers.indexOf(random_number) === -1) {
+          unique_random_numbers.push(random_number);
+        }
+      };*/
+
+      /*int a[] = new int[n];
+      String line = br.readLine();
+      String[] strs = line.trim().split(",");
+      for (int i = 0; i < n; i++) {
+        a[i] = Integer.parseInt(strs[i]);
+      } */
+
+      var random_number = Math.floor((Math.random() * generatedPairs.length));
+
+      var generatedPairs2 = pairsGenerator(image_pool, 2);
+
+
+
+
+
+
+      var image1 = generatedPairs[random_number][0];
+      var image2 = generatedPairs[random_number][1];
+      console.log(random_number);
+      console.log(image1);
+      console.log(image2);
+
+
+
+
+
+
+
+      /*
+      var image1 = generatedPairs1[random_number][0];
+      var image2 = generatedPairs1[random_number][1];
+
+      var x = Math.floor((Math.random() * generatedPairs.length) + 1);
+      var x = Math.floor(Math.random() * (generatedPairs.length));
+      var x, j;
+      for (j = 0; j < uniqueRange.length; j++) {
+        x += uniqueRange[j];
+        console.log(x)
+      };
+
+var y = Math.floor(Math.random() * (generatedPairs.length));
+      var image1 = generatedPairs[y][0];
+      var image2 = generatedPairs[y][1];*/
+
 
         var trial = {
             type: 'survey-likert',
-            preamble: ['<img src="'+random_image1+'" style="float: left; width: 45%"></img><img src="'+random_image2+'" style="float: right; width: 45%"></img><p style="clear: both;">'],
+            preamble: ['<img src="'+image1+'" style="float: left; width: 45%"></img><img src="'+image2+'" style="float: right; width: 45%"></img><p style="clear: both;">'],
             questions: ['How similar are the structures?'],
             required: true,
             labels: [scale],
-            data: [{image1ID: random_image1.image1ID, image2ID: random_image2.image2ID}]
           };
       experiment.push(trial);
     }
@@ -78,6 +240,16 @@ function saveData(filename, filedata){
   });
 }
 
+
+
+
+
+
+ /*create experiment timeline
+    var timeline = [];
+    timeline.push(welcome_block);
+    timeline.push(instructions_block);
+    timeline.push(trail);*/
 
 /* start experiment */
 
