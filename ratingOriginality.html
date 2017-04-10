@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
     <head>
-        <title>My experiment</title>
+        <title>Originality</title>
         <link rel="shortcut icon" href="">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -83,10 +83,7 @@
   var shuffledImage_pool = jsPsych.randomization.sample(image_pool, 174, false);
   console.log(shuffledImage_pool);
 
-  var scale = ["Very common - 1", "2", "3", "4", "5", "6", "7 - Very unusual"];
-
-
-
+  var scale = ["Very common - 1", "2", "3", "4", "5", "6", "7 - Very original"];
 
 
 /* trial needs to be repeated 100 times, pairs should not repeat */
@@ -105,7 +102,7 @@
         var trial = {
             type: 'survey-likert',
             preamble: ['<img src="'+image1+'" style="float: centre"></img>'],
-            questions: ['How unusual is the block structure?'],
+            questions: ['How original is the block structure?'],
             required: true,
             labels: [scale],
             data: {image1: image1}
@@ -139,7 +136,6 @@ function saveData(filename, filedata){
     data: {filename: filename, filedata: filedata}
   });
 };
-
 
 
 /* start experiment */
