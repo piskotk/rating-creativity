@@ -1,0 +1,177 @@
+<!doctype html>
+<html>
+    <head>
+        <title>My experiment</title>
+        <link rel="shortcut icon" href="">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="jspsych-5.0.3/jspsych.js"></script>
+        <script src="jspsych-5.0.3/plugins/jspsych-html.js"></script>
+        <script src="jspsych-5.0.3/plugins/jspsych-text.js"></script>
+        <script src="jspsych-5.0.3/plugins/jspsych-survey-text.js"></script>
+        <script src="jspsych-5.0.3/plugins/jspsych-call-function.js"></script>
+        <script src="jspsych-5.0.3/plugins/jspsych-survey-likert.js"></script>
+        <link href="jspsych-5.0.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+    </head>
+    <body>
+    </body>
+    <script>
+
+
+/* instructions block */
+    var instructions_block = {
+      type: "text",
+      text: "<p>I am Zarja Muršič, a PhD student, from Department of Anthropology at Durham University. I am researching creativity in children.</p>" +
+      "<p> I have asked a group of children to build structures from blocks giving them different types of instructions. I would like to know how the presence of instructions influences their creativity.</p>" +
+      "<p> To do that I need your help. In this application, you will be asked to rate pairs of block structures. You will be asked how similar the structures on the pictures are to each other. You will have an option to answer on a scale from 1 (very similar) to 7 (very different).</p>" +
+      "<p>In the main part of rating you will see 130 pairs of pictures. The rating will take approximately 10 minutes. Please complete this study in one go.</p>" +
+      "<p>The data collected are only your responses (numbers from 1 to 7), consent, age, gender, the date and time. If you have any more questions about my study you can reach me through email zarja.mursic@durham.ac.uk.</p>" +
+      "<p>Press any key to begin.</p>",
+      timing_post_trial: 2000
+    };
+
+/* consent block */
+    var check_consent=function(elem) {
+      if ($('#consent_checkbox').is(':checked')) {
+        return true;
+      }
+      else {
+        alert("If you wish to participate, you must check the box next to the statement 'I agree to participate in this study.'");
+        return false;
+      }
+      return false;
+    };
+
+    var consent_block = {
+      type:'html',
+      url: "consent.html",
+      cont_btn: "start",
+      check_fn: check_consent,
+    };
+
+    var age;
+    var gender;
+    var prolificID;
+
+    var survey_trial = {
+      type: 'survey-text',
+      questions: [["How old are you?"], ["What is your gender?"], ["If you got here through Prolific, please add your Prolific ID:"]],
+      on_finish: function(data) {
+        var responses = JSON.parse(data.responses);
+        var age = responses.Q0;
+        var gender = responses.Q1;
+        var prolificID = responses.Q2;
+        jsPsych.data.addProperties({participantAge: age, participantGender: gender, participantProlificID: prolificID});
+      }
+    };
+
+    var thankyou_block = {
+      type: 'text',
+      text: "<p>If you agree with your data being recorded, please press any key to finish the study and the data will be saved.</p>" +
+      "<p>Thank you for participation.</p>",
+    };
+
+  var i;
+  var image_pool = [];
+
+  for (i = 1; i<=174; i++) {
+    image_pool[i] = ["img/" + i + ".JPG"];
+  };
+
+    var scale = ["Very similar - 1", "2", "3", "4", "5", "6", "7 - Very different"];
+
+    function pairsGenerator(inputSet, k) {
+      return (function subsetRecurser(subset, inputSetIndex, subsetIndex, result) {
+        inputSetIndex = inputSetIndex || 1
+        subsetIndex = subsetIndex || 0
+        subset = subset || []
+        result = result || []
+
+        if (subsetIndex === k) {
+          result.push(subset.slice())
+          return
+        }
+
+        if (inputSetIndex >= inputSet.length) {
+          return
+        }
+
+        subset[subsetIndex] = inputSet[inputSetIndex]
+        subsetRecurser(subset, inputSetIndex + 1, subsetIndex + 1, result)
+        subsetRecurser(subset, inputSetIndex + 1, subsetIndex, result)
+
+        return result
+      })()
+    };
+
+    var generatedPairs = pairsGenerator(image_pool, 2);
+    console.log(generatedPairs);
+
+
+    var shuffledImage_pairs = jsPsych.randomization.sample(generatedPairs, 130, false);
+    console.log(shuffledImage_pairs);
+
+
+/* trial needs to be repeated 130 times, pairs should not repeat */
+  var experiment = [];
+    experiment.push(instructions_block);
+    experiment.push(consent_block);
+    experiment.push(survey_trial);
+
+      for (var j = 1; j < 131; j++) {
+
+      var image1 = shuffledImage_pairs[j-1][0];
+      var image2 = shuffledImage_pairs[j-1][1];
+
+
+      console.log(j-1);
+      console.log(image1);
+      console.log(image2);
+
+        var trial = {
+            type: 'survey-likert',
+            preamble: ['<img src="'+image1+'" style="float: left; width: 45%"></img><img src="'+image2+'" style="float: right; width: 45%"></img><p style="clear: both;">'],
+            questions: ['How similar are the structures?'],
+            required: true,
+            labels: [scale],
+            data: {image1: image1, image2: image2}
+          };
+
+
+      experiment.push(trial);
+      };
+      experiment.push(thankyou_block);
+
+
+
+/* saving data code */
+
+var subject_id = Math.floor(Math.random()*100000);
+
+jsPsych.data.addProperties({
+  subject: subject_id,
+  participantAge: age,
+  participantGender: gender,
+  participantProlificID: prolificID,
+});
+
+var currentTimeMS = Date.now();
+
+function saveData(filename, filedata){
+  $.ajax({
+    type: 'post',
+    cache: false,
+    url: 'save_data.php',
+    data: {filename: filename, filedata: filedata}
+  });
+};
+
+
+
+/* start experiment */
+
+    jsPsych.init({
+         timeline: experiment,
+         on_finish: function(data){ saveData("filename"+currentTimeMS+".csv", jsPsych.data.dataAsCSV()) }
+      });
+</script>
+</html>
